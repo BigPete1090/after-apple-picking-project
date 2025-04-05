@@ -1,0 +1,1 @@
+This is my project I made for my American Studies II class, based on the Robert Frost poem "After Apple-Picking". I wanted to respond to the poem since its flow and story was very intresting, as it seems to be a long train of thought.
