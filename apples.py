@@ -15,15 +15,16 @@ apple_img = pygame.transform.scale(apple_img, (120, 120))
 # Setting up the screen with pygame
 screen = pygame.display.set_mode((bg_width, bg_height))
 clock = pygame.time.Clock()
-
 # Making the falling apples
 num_apples = 20
 apples = [{"x": random.randint(50, bg_width - 50), "y": random.randint(-50, 0), "speed": random.uniform(3, 5)} for _ in range(num_apples)]
 
 frames = []
-max_frames = 70  # 10 fps for 7 seconds
+# 10 fps for 7 seconds
+max_frames = 70  
 
-def apply_vertical_stretch(img, frame, max_frames):
+# applies the horizontal stretch
+def apply_horizontal_stretch(img, frame, max_frames):
     img = img.convert("RGB")
     pixels = img.load()
 
@@ -37,13 +38,12 @@ def apply_vertical_stretch(img, frame, max_frames):
             new_y = y + offset
             if 0 <= new_y < bg_height:
                 pixels[x, y] = pixels[x, new_y]
-
     return img
-
+# adds the changes and updates to each frame and saves it
 for frame in range(max_frames):
     # Load and distort background 
     img = Image.open("apple_orchard.jpg")
-    img = apply_vertical_stretch(img, frame, max_frames)
+    img = apply_horizontal_stretch(img, frame, max_frames)
     t = min(frame / max_frames, 1)
     blur_factor = t ** 2.2  
     blur_radius = blur_factor * 8
@@ -67,25 +67,22 @@ for frame in range(max_frames):
             apple["y"] = random.randint(-50, 0)
             apple["x"] = random.randint(50, bg_width - 50)
         apple_surface.blit(apple_img, (apple["x"], apple["y"]))
-
     # Save apple surface to image and apply minor blur
     pygame.image.save(apple_surface, "temp_apples.png")
     apple_pil = Image.open("temp_apples.png").filter(ImageFilter.GaussianBlur(radius=blur_radius))
     apple_pil.save("temp_apples_blurred.png")
     blurred_apples = pygame.image.load("temp_apples_blurred.png")
-
     # fully load screen
     screen.blit(bg_img, (0, 0))
     screen.blit(blurred_apples, (0, 0))
     pygame.display.flip()
     clock.tick(10)
-
     # Save frame for GIF to be turned into a gif later
     frame_path = f"frame_{frame}.jpg"
     pygame.image.save(screen, frame_path)
     frames.append(imageio.imread(frame_path))
 
-# Save animation as GIF
+# Save animation as GIF using each frame
 try:
     imageio.mimsave("dreamy_apple_fall.gif", frames, duration=0.1)
     print("GIF successfully saved.")
